@@ -40,7 +40,7 @@ public sealed class CreateUserHandlerTests
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => handler.HandleAsync(new CreateUserCommand("alice@example.com", "Alice", "Admin")));
     }
 
-    private sealed class FakeUserRepository : IUserRepository
+    internal sealed class FakeUserRepository : IUserRepository
     {
         public List<IdentityUser> Users { get; } = new();
 

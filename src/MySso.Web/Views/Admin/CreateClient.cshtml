@@ -1,0 +1,60 @@
+@model MySso.Web.ViewModels.Admin.CreateClientViewModel
+@using MySso.Domain.Enums
+
+@{
+    ViewData["Title"] = "Register Client";
+}
+
+<h1 class="h3 mb-3">Register Client</h1>
+
+<form method="post" class="card shadow-sm">
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="ClientId" class="form-label"></label>
+                <input asp-for="ClientId" class="form-control" />
+                <span asp-validation-for="ClientId" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="DisplayName" class="form-label"></label>
+                <input asp-for="DisplayName" class="form-control" />
+                <span asp-validation-for="DisplayName" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ClientType" class="form-label"></label>
+                <select asp-for="ClientType" asp-items="Html.GetEnumSelectList<ClientType>()" class="form-select"></select>
+            </div>
+            <div class="col-12">
+                <label asp-for="RedirectUri" class="form-label"></label>
+                <input asp-for="RedirectUri" class="form-control" />
+                <span asp-validation-for="RedirectUri" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="AllowedScopes" class="form-label"></label>
+                <input asp-for="AllowedScopes" class="form-control" />
+                <span asp-validation-for="AllowedScopes" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input asp-for="AllowRefreshTokens" class="form-check-input" />
+                    <label asp-for="AllowRefreshTokens" class="form-check-label"></label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input asp-for="RequireConsent" class="form-check-input" />
+                    <label asp-for="RequireConsent" class="form-check-label"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Register Client</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

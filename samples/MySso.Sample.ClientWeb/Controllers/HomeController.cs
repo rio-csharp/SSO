@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -10,6 +11,15 @@ namespace MySso.Sample.ClientWeb.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly IConfiguration _configuration;
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public HomeController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+    {
+        _configuration = configuration;
+        _httpClientFactory = httpClientFactory;
+    }
+
     public IActionResult Index()
     {
         return View();
@@ -28,6 +38,26 @@ public class HomeController : Controller
         ViewData["RefreshToken"] = await HttpContext.GetTokenAsync("refresh_token");
 
         return View();
+    }
+
+    [Authorize]
+    public async Task<IActionResult> ApiData(CancellationToken cancellationToken)
+    {
+        var accessToken = await HttpContext.GetTokenAsync("access_token");
+
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            return View(model: "No access token is available for the current session.");
+        }
+
+        var httpClient = _httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri(_configuration["Api:BaseUrl"] ?? "https://localhost:7061/");
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var response = await httpClient.GetAsync("api/profile/me", cancellationToken);
+        var payload = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        return View(model: payload);
     }
 
     [HttpPost]

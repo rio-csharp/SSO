@@ -13,6 +13,17 @@
 
 <h1 class="h3 mb-4">Administration Dashboard</h1>
 
+@if (TempData["AdminMessage"] is string message)
+{
+    <div class="alert alert-info">@message</div>
+}
+
+<div class="d-flex gap-2 mb-4">
+    <a asp-action="CreateUser" class="btn btn-primary">Create User</a>
+    <a asp-action="CreateRole" class="btn btn-outline-primary">Create Role</a>
+    <a asp-action="CreateClient" class="btn btn-outline-primary">Register Client</a>
+</div>
+
 <div class="row g-4">
     <div class="col-lg-6">
         <div class="card shadow-sm h-100">
@@ -78,7 +89,7 @@
             <div class="card-header">Sessions (@sessions.TotalCount)</div>
             <div class="card-body table-responsive">
                 <table class="table table-sm align-middle mb-0">
-                    <thead><tr><th>Subject</th><th>Client</th><th>Revoked</th></tr></thead>
+                    <thead><tr><th>Subject</th><th>Client</th><th>Revoked</th><th></th></tr></thead>
                     <tbody>
                     @foreach (var session in sessions.Items)
                     {
@@ -86,6 +97,15 @@
                             <td>@session.Subject</td>
                             <td>@(session.ClientId ?? "N/A")</td>
                             <td>@(session.IsRevoked ? "Yes" : "No")</td>
+                            <td class="text-end">
+                                @if (!session.IsRevoked)
+                                {
+                                    <form asp-action="RevokeSession" asp-route-sessionId="@session.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Force Revoke</button>
+                                    </form>
+                                }
+                            </td>
                         </tr>
                     }
                     </tbody>
