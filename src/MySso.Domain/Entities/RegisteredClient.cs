@@ -5,8 +5,12 @@ namespace MySso.Domain.Entities;
 
 public sealed class RegisteredClient : AuditableEntity
 {
-    private readonly List<string> _allowedScopes;
-    private readonly List<string> _redirectUris;
+    private List<string> _allowedScopes = new();
+    private List<string> _redirectUris = new();
+
+    private RegisteredClient()
+    {
+    }
 
     private RegisteredClient(
         Guid id,
@@ -37,15 +41,15 @@ public sealed class RegisteredClient : AuditableEntity
         }
     }
 
-    public string ClientId { get; }
+    public string ClientId { get; private set; } = string.Empty;
 
-    public string DisplayName { get; private set; }
+    public string DisplayName { get; private set; } = string.Empty;
 
-    public ClientType ClientType { get; }
+    public ClientType ClientType { get; private set; }
 
-    public bool RequirePkce { get; }
+    public bool RequirePkce { get; private set; }
 
-    public bool AllowRefreshTokens { get; }
+    public bool AllowRefreshTokens { get; private set; }
 
     public bool RequireConsent { get; private set; }
 

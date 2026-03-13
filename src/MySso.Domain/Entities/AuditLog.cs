@@ -5,6 +5,12 @@ namespace MySso.Domain.Entities;
 
 public sealed class AuditLog : Entity
 {
+    private Dictionary<string, string> _metadata = new(StringComparer.OrdinalIgnoreCase);
+
+    private AuditLog()
+    {
+    }
+
     private AuditLog(
         Guid id,
         string actorId,
@@ -26,28 +32,28 @@ public sealed class AuditLog : Entity
         OccurredAtUtc = occurredAtUtc;
         IpAddress = string.IsNullOrWhiteSpace(ipAddress) ? null : ipAddress.Trim();
         Description = Guard.AgainstNullOrWhiteSpace(description, nameof(description));
-        Metadata = metadata is null
-            ? new Dictionary<string, string>()
+        _metadata = metadata is null
+            ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             : new Dictionary<string, string>(metadata, StringComparer.OrdinalIgnoreCase);
     }
 
-    public string ActorId { get; }
+    public string ActorId { get; private set; } = string.Empty;
 
-    public AuditActionType ActionType { get; }
+    public AuditActionType ActionType { get; private set; }
 
-    public string ResourceType { get; }
+    public string ResourceType { get; private set; } = string.Empty;
 
-    public string ResourceId { get; }
+    public string ResourceId { get; private set; } = string.Empty;
 
-    public bool Succeeded { get; }
+    public bool Succeeded { get; private set; }
 
-    public DateTimeOffset OccurredAtUtc { get; }
+    public DateTimeOffset OccurredAtUtc { get; private set; }
 
-    public string? IpAddress { get; }
+    public string? IpAddress { get; private set; }
 
-    public string Description { get; }
+    public string Description { get; private set; } = string.Empty;
 
-    public IReadOnlyDictionary<string, string> Metadata { get; }
+    public IReadOnlyDictionary<string, string> Metadata => _metadata;
 
     public static AuditLog Create(
         Guid id,
