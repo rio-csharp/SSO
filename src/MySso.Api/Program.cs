@@ -1,6 +1,9 @@
+using MySso.Infrastructure.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddInfrastructureCore(builder.Configuration);
 
 var app = builder.Build();
 
@@ -13,7 +16,7 @@ app.MapControllers();
 app.MapGet("/", () => Results.Ok(new
 {
     service = "MySso.Api",
-    stage = "phase-1",
+    stage = "phase-3",
     status = "ready"
 }));
 
