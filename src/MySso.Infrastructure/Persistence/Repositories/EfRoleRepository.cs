@@ -14,8 +14,8 @@ public sealed class EfRoleRepository : IRoleRepository
     }
 
     public Task AddAsync(Role role, CancellationToken cancellationToken)
-        => _dbContext.Roles.AddAsync(role, cancellationToken).AsTask();
+        => _dbContext.DomainRoles.AddAsync(role, cancellationToken).AsTask();
 
     public Task<bool> ExistsByNameAsync(string roleName, CancellationToken cancellationToken)
-        => _dbContext.Roles.AnyAsync(role => role.Name == roleName, cancellationToken);
+        => _dbContext.DomainRoles.AnyAsync(role => role.Name == roleName, cancellationToken);
 }

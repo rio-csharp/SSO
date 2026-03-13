@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySso.Application.Common.Interfaces;
+using MySso.Infrastructure.Identity;
 using MySso.Infrastructure.Options;
 using MySso.Infrastructure.Persistence;
 using MySso.Infrastructure.Persistence.Repositories;
@@ -24,6 +26,7 @@ public static class ServiceCollectionExtensions
         }
 
         services.AddDbContext<MySsoDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddInfrastructureIdentity();
         services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<MySsoDbContext>());
         services.AddScoped<IUserRepository, EfUserRepository>();
         services.AddScoped<IRoleRepository, EfRoleRepository>();
@@ -32,6 +35,29 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuditLogRepository, EfAuditLogRepository>();
 
         return services.AddInfrastructureCore(configuration);
+    }
+
+    public static IServiceCollection AddInfrastructureIdentity(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.AddDataProtection();
+
+        services.AddIdentityCore<SsoIdentityUser>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 12;
+            })
+            .AddRoles<SsoIdentityRole>()
+            .AddEntityFrameworkStores<MySsoDbContext>()
+            .AddSignInManager()
+            .AddDefaultTokenProviders();
+
+        return services;
     }
 
     public static IServiceCollection AddInfrastructureCore(this IServiceCollection services, IConfiguration configuration)
