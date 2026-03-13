@@ -1,0 +1,36 @@
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="row">
+    <div class="col-lg-10">
+        <h1 class="h3 mb-3">Authenticated Profile</h1>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">Claims</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    @foreach (var claim in User.Claims.OrderBy(item => item.Type))
+                    {
+                        <dt class="col-sm-4">@claim.Type</dt>
+                        <dd class="col-sm-8 text-break">@claim.Value</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header">Token Snapshot</div>
+            <div class="card-body">
+                <p><strong>Access token:</strong></p>
+                <pre class="small text-break">@ViewData["AccessToken"]</pre>
+                <p><strong>ID token:</strong></p>
+                <pre class="small text-break">@ViewData["IdToken"]</pre>
+                <p><strong>Refresh token:</strong></p>
+                <pre class="small text-break">@ViewData["RefreshToken"]</pre>
+            </div>
+        </div>
+    </div>
+</div>
