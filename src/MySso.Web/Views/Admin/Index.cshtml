@@ -1,0 +1,118 @@
+@using MySso.Contracts.Identity
+@using MySso.Contracts.Pagination
+@using MySso.Contracts.Security
+
+@{
+    ViewData["Title"] = "Administration";
+    var users = (PageResult<UserSummary>)ViewData["Users"]!;
+    var roles = (PageResult<RoleSummary>)ViewData["Roles"]!;
+    var clients = (PageResult<ClientSummary>)ViewData["Clients"]!;
+    var sessions = (PageResult<UserSessionSummary>)ViewData["Sessions"]!;
+    var auditLogs = (PageResult<AuditLogEntry>)ViewData["AuditLogs"]!;
+}
+
+<h1 class="h3 mb-4">Administration Dashboard</h1>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">Users (@users.TotalCount)</div>
+            <div class="card-body table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Email</th><th>Name</th><th>Status</th></tr></thead>
+                    <tbody>
+                    @foreach (var user in users.Items)
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.GivenName @user.FamilyName</td>
+                            <td>@(user.IsActive ? "Active" : "Disabled")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">Roles (@roles.TotalCount)</div>
+            <div class="card-body table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Name</th><th>System</th></tr></thead>
+                    <tbody>
+                    @foreach (var role in roles.Items)
+                    {
+                        <tr>
+                            <td>@role.Name</td>
+                            <td>@(role.IsSystemRole ? "Yes" : "No")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">Clients (@clients.TotalCount)</div>
+            <div class="card-body table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Client</th><th>Type</th><th>Enabled</th></tr></thead>
+                    <tbody>
+                    @foreach (var client in clients.Items)
+                    {
+                        <tr>
+                            <td>@client.ClientId</td>
+                            <td>@client.ClientType</td>
+                            <td>@(client.IsEnabled ? "Yes" : "No")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">Sessions (@sessions.TotalCount)</div>
+            <div class="card-body table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Subject</th><th>Client</th><th>Revoked</th></tr></thead>
+                    <tbody>
+                    @foreach (var session in sessions.Items)
+                    {
+                        <tr>
+                            <td>@session.Subject</td>
+                            <td>@(session.ClientId ?? "N/A")</td>
+                            <td>@(session.IsRevoked ? "Yes" : "No")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header">Recent Audit Logs (@auditLogs.TotalCount)</div>
+            <div class="card-body table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Resource</th><th>Success</th></tr></thead>
+                    <tbody>
+                    @foreach (var log in auditLogs.Items)
+                    {
+                        <tr>
+                            <td>@log.OccurredAtUtc.ToString("u")</td>
+                            <td>@log.ActorId</td>
+                            <td>@log.ActionType</td>
+                            <td>@log.ResourceType / @log.ResourceId</td>
+                            <td>@(log.Succeeded ? "Yes" : "No")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

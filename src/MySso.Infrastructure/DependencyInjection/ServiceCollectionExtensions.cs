@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClientRepository, EfClientRepository>();
         services.AddScoped<IUserSessionRepository, EfUserSessionRepository>();
         services.AddScoped<IAuditLogRepository, EfAuditLogRepository>();
+        services.AddScoped<IAdministrationQueryService, AdministrationQueryService>();
 
         return services.AddInfrastructureCore(configuration);
     }

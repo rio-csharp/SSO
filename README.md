@@ -2,15 +2,15 @@
 
 ## 当前阶段
 
-当前仓库已进入阶段 6，在前几个阶段的基础上，开始接入 OpenIddict 协议基础。
+当前仓库已进入阶段 8，在前几个阶段的基础上，开始补齐用户中心与后台只读管理面。
 
 本阶段目标：
 
 - 保持 Domain / Contracts / Application 内核稳定
-- 保持 Identity 与 EF Core 基础稳定
-- 在 Infrastructure 中接入 OpenIddict Core/Server 基础
-- 为授权码 + PKCE + Refresh Token 流程建立协议级基础配置
-- 继续通过测试固定分层边界、配置校验、持久化、身份与协议基础行为
+- 保持认证、持久化与协议基础稳定
+- 建立 Application 只读查询接口与 Infrastructure 查询实现
+- 为 Web 宿主提供用户中心与后台只读管理页
+- 继续通过测试固定分层边界、配置校验、管理查询与宿主集成行为
 
 本阶段不包含：
 
@@ -60,13 +60,15 @@ tests/
 - Infrastructure：`MySsoDbContext`、实体映射、EF Core 仓储、设计时工厂
 - Infrastructure：`SsoIdentityUser`、`SsoIdentityRole` 与 Identity 管理器注册
 - Infrastructure：OpenIddict Core/Server 注册与协议基础配置
-- Tests：覆盖邮箱校验、客户端安全约束、会话撤销规则、应用层处理器行为、基础设施注入、仓储基础行为、Identity 管理器解析与 OpenIddict 服务注册
+- Application：后台/用户中心查询接口
+- Web：登录页、授权端点、用户中心与后台只读管理页面
+- Tests：覆盖邮箱校验、客户端安全约束、会话撤销规则、应用层处理器行为、基础设施注入、仓储基础行为、Identity 管理器解析、OpenIddict 服务注册与查询层行为
 
 ## 后续阶段
 
 后续将按增量方式推进：
 
-1. 实现认证核心
+1. 完成认证核心剩余交互
 2. 完善审计、会话、后台与客户端接入
 3. 完成联调、加固与全链路验收
 
