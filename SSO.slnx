@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/MySso.Sample.ClientWeb/MySso.Sample.ClientWeb.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/MySso.Api/MySso.Api.csproj" />
+    <Project Path="src/MySso.Application/MySso.Application.csproj" />
+    <Project Path="src/MySso.Contracts/MySso.Contracts.csproj" />
+    <Project Path="src/MySso.Domain/MySso.Domain.csproj" />
+    <Project Path="src/MySso.Infrastructure/MySso.Infrastructure.csproj" />
+    <Project Path="src/MySso.Web/MySso.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MySso.Application.Tests/MySso.Application.Tests.csproj" />
+    <Project Path="tests/MySso.Domain.Tests/MySso.Domain.Tests.csproj" />
+    <Project Path="tests/MySso.IntegrationTests/MySso.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
