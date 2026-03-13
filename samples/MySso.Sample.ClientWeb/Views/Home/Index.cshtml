@@ -2,7 +2,29 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-4">
+    <h1 class="display-5">Sample OIDC Client</h1>
+    <p class="lead">This MVC app uses authorization code + PKCE against the local SSO server.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <p class="mb-3">You are signed in as <strong>@User.Identity.Name</strong>.</p>
+                    <a asp-action="Profile" class="btn btn-primary">View Claims And Tokens</a>
+                }
+                else
+                {
+                    <p class="mb-3">Use the seeded confidential client and the bootstrap administrator account to test the end-to-end login flow.</p>
+                    <form asp-action="Login" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-primary">Sign In With SSO</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
 </div>

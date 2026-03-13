@@ -103,7 +103,9 @@ public static class ServiceCollectionExtensions
                 options.AddEphemeralEncryptionKey()
                     .AddEphemeralSigningKey();
 
-                options.UseAspNetCore();
+                options.UseAspNetCore()
+                    .EnableAuthorizationEndpointPassthrough()
+                    .EnableEndSessionEndpointPassthrough();
             });
 
         return services;
