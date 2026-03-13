@@ -124,9 +124,31 @@ public sealed class AdministrationQueryService : IAdministrationQueryService
 
     public async Task<PageResult<UserSessionSummary>> GetSessionsAsync(PageRequest request, CancellationToken cancellationToken)
     {
-        var query = _dbContext.UserSessions
-            .AsNoTracking()
-            .OrderByDescending(item => item.UpdatedAtUtc);
+        var query = CreateSessionQuery();
+
+        var total = await query.CountAsync(cancellationToken);
+        var items = await query
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(item => new UserSessionSummary(
+                item.Id,
+                item.UserId,
+                item.Subject,
+                item.ClientId,
+                item.ExpiresAtUtc,
+                item.IsRevoked,
+                item.RevokedAtUtc,
+                item.RevokedBy,
+                item.RevocationReason == null ? null : item.RevocationReason.ToString()))
+            .ToListAsync(cancellationToken);
+
+        return new PageResult<UserSessionSummary>(items, request.PageNumber, request.PageSize, total);
+    }
+
+    public async Task<PageResult<UserSessionSummary>> GetSessionsForSubjectAsync(PageRequest request, string subject, CancellationToken cancellationToken)
+    {
+        var normalizedSubject = string.IsNullOrWhiteSpace(subject) ? string.Empty : subject.Trim();
+        var query = CreateSessionQuery().Where(item => item.Subject == normalizedSubject);
 
         var total = await query.CountAsync(cancellationToken);
         var items = await query
@@ -171,4 +193,9 @@ public sealed class AdministrationQueryService : IAdministrationQueryService
 
         return new PageResult<UserSummary>(items, request.PageNumber, request.PageSize, total);
     }
+
+    private IQueryable<Domain.Entities.UserSession> CreateSessionQuery()
+        => _dbContext.UserSessions
+            .AsNoTracking()
+            .OrderByDescending(item => item.UpdatedAtUtc);
 }

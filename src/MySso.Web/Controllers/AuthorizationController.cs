@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MySso.Infrastructure.Identity;
@@ -86,6 +87,23 @@ public sealed class AuthorizationController : Controller
         {
             RedirectUri = Url.Action(nameof(HomeController.Index), "Home")
         }, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+    [Authorize(AuthenticationSchemes = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)]
+    [HttpGet("~/connect/userinfo")]
+    [HttpPost("~/connect/userinfo")]
+    public IActionResult UserInfo()
+    {
+        return Ok(new
+        {
+            sub = User.FindFirst(Claims.Subject)?.Value,
+            name = User.FindFirst(Claims.Name)?.Value,
+            preferred_username = User.FindFirst(Claims.PreferredUsername)?.Value,
+            email = User.FindFirst(Claims.Email)?.Value,
+            given_name = User.FindFirst(Claims.GivenName)?.Value,
+            family_name = User.FindFirst(Claims.FamilyName)?.Value,
+            role = User.FindAll(Claims.Role).Select(claim => claim.Value).ToArray()
+        });
     }
 
     private static IEnumerable<string> GetDestinations(Claim claim)

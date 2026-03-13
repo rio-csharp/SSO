@@ -2,7 +2,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySso.Application.Features.Clients;
 using MySso.Application.Common.Interfaces;
+using MySso.Application.Features.IdentityUsers;
+using MySso.Application.Features.Roles;
+using MySso.Application.Features.UserSessions;
 using MySso.Infrastructure.Identity;
 using MySso.Infrastructure.Options;
 using MySso.Infrastructure.Persistence;
@@ -41,6 +45,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserSessionRepository, EfUserSessionRepository>();
         services.AddScoped<IAuditLogRepository, EfAuditLogRepository>();
         services.AddScoped<IAdministrationQueryService, AdministrationQueryService>();
+        services.AddScoped<IIdentityAccountProvisioningService, IdentityAccountProvisioningService>();
+        services.AddScoped<CreateLocalUserHandler>();
+        services.AddScoped<CreateRoleHandler>();
+        services.AddScoped<RegisterClientHandler>();
+        services.AddScoped<RevokeUserSessionHandler>();
 
         return services.AddInfrastructureCore(configuration);
     }
@@ -106,7 +115,8 @@ public static class ServiceCollectionExtensions
 
                 options.UseAspNetCore()
                     .EnableAuthorizationEndpointPassthrough()
-                    .EnableEndSessionEndpointPassthrough();
+                    .EnableEndSessionEndpointPassthrough()
+                    .EnableUserInfoEndpointPassthrough();
             });
 
         return services;

@@ -14,6 +14,8 @@ public interface IAdministrationQueryService
 
     Task<PageResult<UserSessionSummary>> GetSessionsAsync(PageRequest request, CancellationToken cancellationToken);
 
+    Task<PageResult<UserSessionSummary>> GetSessionsForSubjectAsync(PageRequest request, string subject, CancellationToken cancellationToken);
+
     Task<PageResult<AuditLogEntry>> GetAuditLogsAsync(PageRequest request, CancellationToken cancellationToken);
 
     Task<UserProfileSummary?> GetCurrentUserProfileAsync(string subjectId, CancellationToken cancellationToken);
