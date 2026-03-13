@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\MySso.Application\MySso.Application.csproj" />
+    <ProjectReference Include="..\MySso.Infrastructure\MySso.Infrastructure.csproj" />
+    <ProjectReference Include="..\MySso.Contracts\MySso.Contracts.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
