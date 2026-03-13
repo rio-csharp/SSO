@@ -5,6 +5,10 @@ namespace MySso.Domain.Entities;
 
 public sealed class IdentityUser : AuditableEntity
 {
+    private IdentityUser()
+    {
+    }
+
     private IdentityUser(Guid id, EmailAddress email, PersonName givenName, PersonName familyName, DateTimeOffset createdAtUtc)
         : base(id, createdAtUtc)
     {

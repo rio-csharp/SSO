@@ -4,6 +4,10 @@ namespace MySso.Domain.Entities;
 
 public sealed class Role : AuditableEntity
 {
+    private Role()
+    {
+    }
+
     private Role(Guid id, string name, string description, bool isSystemRole, DateTimeOffset createdAtUtc)
         : base(id, createdAtUtc)
     {
@@ -12,9 +16,9 @@ public sealed class Role : AuditableEntity
         IsSystemRole = isSystemRole;
     }
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = string.Empty;
 
-    public string Description { get; private set; }
+    public string Description { get; private set; } = string.Empty;
 
     public bool IsSystemRole { get; }
 

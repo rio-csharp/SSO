@@ -5,6 +5,10 @@ namespace MySso.Domain.Entities;
 
 public sealed class UserSession : AuditableEntity
 {
+    private UserSession()
+    {
+    }
+
     private UserSession(
         Guid id,
         Guid userId,
@@ -26,11 +30,11 @@ public sealed class UserSession : AuditableEntity
         ExpiresAtUtc = expiresAtUtc;
     }
 
-    public Guid UserId { get; }
+    public Guid UserId { get; private set; }
 
-    public string Subject { get; }
+    public string Subject { get; private set; } = string.Empty;
 
-    public string? ClientId { get; }
+    public string? ClientId { get; private set; }
 
     public DateTimeOffset ExpiresAtUtc { get; private set; }
 
