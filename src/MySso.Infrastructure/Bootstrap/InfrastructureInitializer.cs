@@ -26,7 +26,12 @@ public static class InfrastructureInitializer
         var applicationManager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
         var bootstrapOptions = scope.ServiceProvider.GetRequiredService<IOptions<MySsoBootstrapOptions>>().Value;
 
-        await dbContext.Database.MigrateAsync(cancellationToken);
+        var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync(cancellationToken);
+
+        if (pendingMigrations.Any())
+        {
+            await dbContext.Database.MigrateAsync(cancellationToken);
+        }
 
         var domainRole = await EnsureDomainAdministratorRoleAsync(dbContext, cancellationToken);
         await EnsureIdentityAdministratorRoleAsync(roleManager, domainRole, cancellationToken);
