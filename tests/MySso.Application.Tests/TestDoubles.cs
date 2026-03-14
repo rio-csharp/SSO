@@ -16,18 +16,30 @@ internal sealed class FakeAuditLogRepository : IAuditLogRepository
 
 internal sealed class FakeUserSessionRepository : IUserSessionRepository
 {
-    private readonly UserSession _session;
+    private readonly Dictionary<Guid, UserSession> _sessions;
 
     public FakeUserSessionRepository(UserSession session)
     {
-        _session = session;
+        _sessions = new Dictionary<Guid, UserSession>
+        {
+            [session.Id] = session
+        };
     }
 
     public Task<UserSession?> GetByIdAsync(Guid sessionId, CancellationToken cancellationToken)
-        => Task.FromResult(_session.Id == sessionId ? _session : null);
+        => Task.FromResult(_sessions.TryGetValue(sessionId, out var session) ? session : null);
+
+    public Task AddAsync(UserSession session, CancellationToken cancellationToken)
+    {
+        _sessions[session.Id] = session;
+        return Task.CompletedTask;
+    }
 
     public Task UpdateAsync(UserSession session, CancellationToken cancellationToken)
-        => Task.CompletedTask;
+    {
+        _sessions[session.Id] = session;
+        return Task.CompletedTask;
+    }
 }
 
 internal sealed class FakeUnitOfWork : IUnitOfWork

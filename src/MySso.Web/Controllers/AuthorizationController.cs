@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using MySso.Application.Common.Interfaces;
 using MySso.Infrastructure.Identity;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
@@ -13,13 +14,20 @@ namespace MySso.Web.Controllers;
 
 public sealed class AuthorizationController : Controller
 {
+    private const string SessionIdClaimType = "sid";
+
+    private readonly ISessionLifecycleService _sessionLifecycleService;
     private readonly SignInManager<SsoIdentityUser> _signInManager;
     private readonly UserManager<SsoIdentityUser> _userManager;
 
-    public AuthorizationController(SignInManager<SsoIdentityUser> signInManager, UserManager<SsoIdentityUser> userManager)
+    public AuthorizationController(
+        SignInManager<SsoIdentityUser> signInManager,
+        UserManager<SsoIdentityUser> userManager,
+        ISessionLifecycleService sessionLifecycleService)
     {
         _signInManager = signInManager;
         _userManager = userManager;
+        _sessionLifecycleService = sessionLifecycleService;
     }
 
     [HttpGet("~/connect/authorize")]
@@ -67,6 +75,15 @@ public sealed class AuthorizationController : Controller
             identity.AddClaim(new Claim(Claims.Role, role));
         }
 
+        var sessionId = await _sessionLifecycleService.StartInteractiveSessionAsync(
+            user.Id,
+            user.DomainUserId,
+            user.Id.ToString(),
+            GetClientId(),
+            HttpContext.Connection.RemoteIpAddress?.ToString(),
+            HttpContext.RequestAborted);
+        identity.AddClaim(new Claim(SessionIdClaimType, sessionId.ToString()));
+
         identity.SetScopes(GetRequestedScopes());
         identity.SetResources("resource_api");
         identity.SetDestinations(GetDestinations);
@@ -109,10 +126,16 @@ public sealed class AuthorizationController : Controller
     private static IEnumerable<string> GetDestinations(Claim claim)
         => claim.Type switch
         {
+            SessionIdClaimType => new[] { Destinations.AccessToken },
             Claims.Name or Claims.Email or Claims.Subject or Claims.PreferredUsername or Claims.GivenName or Claims.FamilyName or Claims.Role
                 => new[] { Destinations.AccessToken, Destinations.IdentityToken },
             _ => new[] { Destinations.AccessToken }
         };
+
+    private string? GetClientId()
+        => Request.HasFormContentType
+            ? Request.Form[Parameters.ClientId].ToString()
+            : Request.Query[Parameters.ClientId].ToString();
 
     private IEnumerable<string> GetRequestedScopes()
     {
