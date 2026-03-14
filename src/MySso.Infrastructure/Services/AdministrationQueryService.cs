@@ -3,6 +3,7 @@ using MySso.Application.Common.Interfaces;
 using MySso.Contracts.Identity;
 using MySso.Contracts.Pagination;
 using MySso.Contracts.Security;
+using DomainIdentityUser = MySso.Domain.Entities.IdentityUser;
 using MySso.Infrastructure.Persistence;
 
 namespace MySso.Infrastructure.Services;
@@ -177,18 +178,23 @@ public sealed class AdministrationQueryService : IAdministrationQueryService
         {
             var term = searchTerm.Trim().ToLowerInvariant();
             query = query.Where(item =>
-                item.Email.Value.Contains(term) ||
-                item.GivenName.Value.ToLower().Contains(term) ||
-                item.FamilyName.Value.ToLower().Contains(term));
+                EF.Property<string>(item, nameof(DomainIdentityUser.Email)).ToLower().Contains(term) ||
+                EF.Property<string>(item, nameof(DomainIdentityUser.GivenName)).ToLower().Contains(term) ||
+                EF.Property<string>(item, nameof(DomainIdentityUser.FamilyName)).ToLower().Contains(term));
         }
 
-        query = query.OrderBy(item => item.Email.Value);
+        query = query.OrderBy(item => EF.Property<string>(item, nameof(DomainIdentityUser.Email)));
 
         var total = await query.CountAsync(cancellationToken);
         var items = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(item => new UserSummary(item.Id, item.Email.Value, item.GivenName.Value, item.FamilyName.Value, item.IsActive))
+            .Select(item => new UserSummary(
+                item.Id,
+                EF.Property<string>(item, nameof(DomainIdentityUser.Email)),
+                EF.Property<string>(item, nameof(DomainIdentityUser.GivenName)),
+                EF.Property<string>(item, nameof(DomainIdentityUser.FamilyName)),
+                item.IsActive))
             .ToListAsync(cancellationToken);
 
         return new PageResult<UserSummary>(items, request.PageNumber, request.PageSize, total);

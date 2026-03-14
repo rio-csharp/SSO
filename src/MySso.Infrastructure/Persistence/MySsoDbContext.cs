@@ -4,6 +4,7 @@ using MySso.Application.Common.Interfaces;
 using MySso.Domain.Entities;
 using MySso.Infrastructure.Identity;
 using MySso.Infrastructure.Persistence.Configurations;
+using OpenIddict.EntityFrameworkCore;
 
 namespace MySso.Infrastructure.Persistence;
 
@@ -40,6 +41,7 @@ public sealed class MySsoDbContext : IdentityDbContext<SsoIdentityUser, SsoIdent
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new UserSessionConfiguration());
         modelBuilder.ConfigureIdentitySchema();
+        modelBuilder.UseOpenIddict<Guid>();
     }
 
     async Task IUnitOfWork.SaveChangesAsync(CancellationToken cancellationToken)
