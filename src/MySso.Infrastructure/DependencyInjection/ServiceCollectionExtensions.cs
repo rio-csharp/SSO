@@ -46,6 +46,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuditLogRepository, EfAuditLogRepository>();
         services.AddScoped<IAdministrationQueryService, AdministrationQueryService>();
         services.AddScoped<IIdentityAccountProvisioningService, IdentityAccountProvisioningService>();
+        services.AddScoped<ISessionLifecycleService, SessionLifecycleService>();
         services.AddScoped<CreateLocalUserHandler>();
         services.AddScoped<CreateRoleHandler>();
         services.AddScoped<RegisterClientHandler>();

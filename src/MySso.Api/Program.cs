@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MySso.Application.Common.Interfaces;
 using MySso.Infrastructure.DependencyInjection;
 using MySso.Infrastructure.Options;
 
@@ -13,6 +14,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.Authority = settings.Issuer;
         options.Audience = "resource_api";
         options.RequireHttpsMetadata = settings.RequireHttps;
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var sessionClaim = context.Principal?.FindFirst("sid")?.Value;
+
+                if (!Guid.TryParse(sessionClaim, out var sessionId))
+                {
+                    context.Fail("The access token does not contain a valid session identifier.");
+                    return;
+                }
+
+                var sessionLifecycleService = context.HttpContext.RequestServices.GetRequiredService<ISessionLifecycleService>();
+
+                if (!await sessionLifecycleService.IsSessionActiveAsync(sessionId, context.HttpContext.RequestAborted))
+                {
+                    context.Fail("The user session is no longer active.");
+                }
+            }
+        };
     });
 builder.Services.AddAuthorization();
 

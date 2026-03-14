@@ -6,5 +6,6 @@ public enum AuditActionType
     UserUpdated = 2,
     RoleCreated = 3,
     ClientRegistered = 4,
-    SessionRevoked = 5
+    SessionRevoked = 5,
+    SessionStarted = 6
 }
