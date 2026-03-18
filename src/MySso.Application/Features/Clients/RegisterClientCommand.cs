@@ -10,4 +10,6 @@ public sealed record RegisterClientCommand(
     bool AllowRefreshTokens,
     bool RequireConsent,
     IReadOnlyCollection<string> RedirectUris,
-    IReadOnlyCollection<string> AllowedScopes);
+    IReadOnlyCollection<string> AllowedScopes,
+    string? ClientSecret,
+    string? PostLogoutRedirectUri);

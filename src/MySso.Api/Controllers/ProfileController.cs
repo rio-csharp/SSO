@@ -16,7 +16,7 @@ public sealed class ProfileController : ControllerBase
         {
             subject = User.FindFirstValue("sub") ?? User.FindFirstValue(ClaimTypes.NameIdentifier),
             name = User.FindFirstValue("name") ?? User.Identity?.Name,
-            email = User.FindFirstValue("email"),
+            email = User.FindFirstValue("email") ?? User.FindFirstValue(ClaimTypes.Email),
             claims = User.Claims.Select(claim => new
             {
                 claim.Type,

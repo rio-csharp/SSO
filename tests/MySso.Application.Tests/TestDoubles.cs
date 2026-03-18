@@ -14,6 +14,44 @@ internal sealed class FakeAuditLogRepository : IAuditLogRepository
     }
 }
 
+internal sealed class FakeClientRepository : IClientRepository
+{
+    public List<RegisteredClient> Clients { get; } = new();
+
+    public bool ExistsResult { get; set; }
+
+    public Task AddAsync(RegisteredClient client, CancellationToken cancellationToken)
+    {
+        Clients.Add(client);
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> ExistsByClientIdAsync(string clientId, CancellationToken cancellationToken)
+        => Task.FromResult(ExistsResult || Clients.Any(client => string.Equals(client.ClientId, clientId, StringComparison.OrdinalIgnoreCase)));
+}
+
+internal sealed class FakeClientProvisioningService : IClientProvisioningService
+{
+    public bool ExistsResult { get; set; }
+
+    public int ProvisionCallCount { get; private set; }
+
+    public string? LastClientSecret { get; private set; }
+
+    public string? LastPostLogoutRedirectUri { get; private set; }
+
+    public Task<bool> ExistsByClientIdAsync(string clientId, CancellationToken cancellationToken)
+        => Task.FromResult(ExistsResult);
+
+    public Task ProvisionAsync(RegisteredClient client, string? clientSecret, string? postLogoutRedirectUri, CancellationToken cancellationToken)
+    {
+        ProvisionCallCount++;
+        LastClientSecret = clientSecret;
+        LastPostLogoutRedirectUri = postLogoutRedirectUri;
+        return Task.CompletedTask;
+    }
+}
+
 internal sealed class FakeUserSessionRepository : IUserSessionRepository
 {
     private readonly Dictionary<Guid, UserSession> _sessions;

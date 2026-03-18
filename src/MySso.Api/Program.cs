@@ -13,7 +13,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         var settings = builder.Configuration.GetSection(MySsoHostOptions.SectionName).Get<MySsoHostOptions>() ?? new MySsoHostOptions();
         options.Authority = settings.Issuer;
         options.Audience = "resource_api";
+        options.MapInboundClaims = false;
         options.RequireHttpsMetadata = settings.RequireHttps;
+        options.TokenValidationParameters.NameClaimType = "name";
+        options.TokenValidationParameters.RoleClaimType = "role";
         options.Events = new JwtBearerEvents
         {
             OnTokenValidated = async context =>

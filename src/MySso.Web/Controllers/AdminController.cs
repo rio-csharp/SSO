@@ -128,7 +128,9 @@ public sealed class AdminController : Controller
                 model.AllowRefreshTokens,
                 model.RequireConsent,
                 new[] { model.RedirectUri },
-                scopes),
+                scopes,
+                string.IsNullOrWhiteSpace(model.ClientSecret) ? null : model.ClientSecret,
+                string.IsNullOrWhiteSpace(model.PostLogoutRedirectUri) ? null : model.PostLogoutRedirectUri),
             cancellationToken);
 
         if (!result.Succeeded)

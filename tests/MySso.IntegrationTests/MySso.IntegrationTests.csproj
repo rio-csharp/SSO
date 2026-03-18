@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\MySso.Api\MySso.Api.csproj" />
     <ProjectReference Include="..\..\src\MySso.Web\MySso.Web.csproj" />
     <ProjectReference Include="..\..\src\MySso.Infrastructure\MySso.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\MySso.Application\MySso.Application.csproj" />

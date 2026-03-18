@@ -36,6 +36,16 @@
                 <span asp-validation-for="AllowedScopes" class="text-danger"></span>
             </div>
             <div class="col-md-6">
+                <label asp-for="ClientSecret" class="form-label"></label>
+                <input asp-for="ClientSecret" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="ClientSecret" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PostLogoutRedirectUri" class="form-label"></label>
+                <input asp-for="PostLogoutRedirectUri" class="form-control" />
+                <span asp-validation-for="PostLogoutRedirectUri" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
                 <div class="form-check">
                     <input asp-for="AllowRefreshTokens" class="form-check-input" />
                     <label asp-for="AllowRefreshTokens" class="form-check-label"></label>

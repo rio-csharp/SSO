@@ -42,6 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRepository, EfUserRepository>();
         services.AddScoped<IRoleRepository, EfRoleRepository>();
         services.AddScoped<IClientRepository, EfClientRepository>();
+        services.AddScoped<IClientProvisioningService, OpenIddictClientProvisioningService>();
         services.AddScoped<IUserSessionRepository, EfUserSessionRepository>();
         services.AddScoped<IAuditLogRepository, EfAuditLogRepository>();
         services.AddScoped<IAdministrationQueryService, AdministrationQueryService>();
