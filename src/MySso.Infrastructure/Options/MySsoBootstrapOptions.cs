@@ -12,7 +12,7 @@ public sealed class MySsoBootstrapOptions
 
     [Required]
     [MinLength(12)]
-    public string AdminPassword { get; set; } = "ChangeThis123!";
+    public string AdminPassword { get; set; } = string.Empty;
 
     [Required]
     public string AdminGivenName { get; set; } = "System";
@@ -24,7 +24,7 @@ public sealed class MySsoBootstrapOptions
     public string ClientId { get; set; } = "sample-client-web";
 
     [Required]
-    public string ClientSecret { get; set; } = "sample-client-secret";
+    public string ClientSecret { get; set; } = string.Empty;
 
     [Required]
     [Url]

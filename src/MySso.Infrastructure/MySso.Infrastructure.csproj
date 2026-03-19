@@ -23,6 +23,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>MySso-Local-Development</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

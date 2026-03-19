@@ -21,4 +21,12 @@ public sealed class MySsoHostOptions
 
     [Range(1, 365)]
     public int RefreshTokenLifetimeDays { get; set; } = 14;
+
+    public string? SigningCertificatePath { get; set; }
+
+    public string? SigningCertificatePassword { get; set; }
+
+    public string? EncryptionCertificatePath { get; set; }
+
+    public string? EncryptionCertificatePassword { get; set; }
 }

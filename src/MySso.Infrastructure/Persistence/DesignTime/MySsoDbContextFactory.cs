@@ -45,6 +45,7 @@ public sealed class MySsoDbContextFactory : IDesignTimeDbContextFactory<MySsoDbC
                 .AddJsonFile("appsettings.Development.json", optional: true);
         }
 
+            configurationBuilder.AddUserSecrets<MySsoDbContextFactory>(optional: true);
         configurationBuilder.AddEnvironmentVariables();
 
         return configurationBuilder.Build();

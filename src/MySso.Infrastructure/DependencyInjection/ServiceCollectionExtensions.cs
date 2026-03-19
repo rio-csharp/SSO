@@ -1,18 +1,22 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using MySso.Application.Features.Clients;
 using MySso.Application.Common.Interfaces;
 using MySso.Application.Features.IdentityUsers;
 using MySso.Application.Features.Roles;
 using MySso.Application.Features.UserSessions;
+using MySso.Infrastructure.HealthChecks;
 using MySso.Infrastructure.Identity;
 using MySso.Infrastructure.Options;
 using MySso.Infrastructure.Persistence;
 using MySso.Infrastructure.Persistence.Repositories;
 using MySso.Infrastructure.Services;
 using OpenIddict.Abstractions;
+using System.Security.Cryptography.X509Certificates;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace MySso.Infrastructure.DependencyInjection;
@@ -36,6 +40,9 @@ public static class ServiceCollectionExtensions
             options.UseNpgsql(connectionString);
             options.UseOpenIddict<Guid>();
         });
+        services.AddHealthChecks()
+            .AddCheck("self", () => HealthCheckResult.Healthy(), new[] { "live", "ready" })
+            .AddCheck<MySsoDatabaseHealthCheck>("database", tags: new[] { "ready" });
         services.AddInfrastructureIdentity();
         services.AddInfrastructureOpenIddict(configuration);
         services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<MySsoDbContext>());
@@ -85,6 +92,8 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
 
         var hostOptions = configuration.GetSection(MySsoHostOptions.SectionName).Get<MySsoHostOptions>() ?? new MySsoHostOptions();
+        var environmentName = configuration["ASPNETCORE_ENVIRONMENT"] ?? configuration["DOTNET_ENVIRONMENT"] ?? Environments.Production;
+        var isDevelopment = string.Equals(environmentName, Environments.Development, StringComparison.OrdinalIgnoreCase);
 
         services.AddOpenIddict()
             .AddCore(options =>
@@ -113,8 +122,16 @@ public static class ServiceCollectionExtensions
 
                 options.RegisterScopes(Scopes.Email, Scopes.OfflineAccess, Scopes.OpenId, Scopes.Profile, "api");
 
-                options.AddEphemeralEncryptionKey()
-                    .AddEphemeralSigningKey();
+                if (isDevelopment)
+                {
+                    options.AddDevelopmentEncryptionCertificate()
+                        .AddDevelopmentSigningCertificate();
+                }
+                else
+                {
+                    options.AddEncryptionCertificate(CreateCertificate(hostOptions.EncryptionCertificatePath, hostOptions.EncryptionCertificatePassword, nameof(hostOptions.EncryptionCertificatePath)))
+                        .AddSigningCertificate(CreateCertificate(hostOptions.SigningCertificatePath, hostOptions.SigningCertificatePassword, nameof(hostOptions.SigningCertificatePath)));
+                }
 
                 options.UseAspNetCore()
                     .EnableAuthorizationEndpointPassthrough()
@@ -123,6 +140,16 @@ public static class ServiceCollectionExtensions
             });
 
         return services;
+    }
+
+    private static X509Certificate2 CreateCertificate(string? certificatePath, string? certificatePassword, string optionName)
+    {
+        if (string.IsNullOrWhiteSpace(certificatePath))
+        {
+            throw new InvalidOperationException($"OpenIddict non-development environments require '{optionName}' to be configured.");
+        }
+
+        return X509CertificateLoader.LoadPkcs12FromFile(certificatePath, certificatePassword, X509KeyStorageFlags.MachineKeySet);
     }
 
     public static IServiceCollection AddInfrastructureCore(this IServiceCollection services, IConfiguration configuration)
