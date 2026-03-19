@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddMySsoApiRateLimiting(builder.Configuration);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -44,6 +45,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+app.UseMySsoApiRateLimiting();
 app.UseAuthentication();
 app.UseAuthorization();
 

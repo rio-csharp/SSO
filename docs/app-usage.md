@@ -208,3 +208,14 @@ What to do:
 
 - go back to [README.md](../README.md)
 - re-run the startup commands exactly as shown
+
+### You see HTTP 429 Too Many Requests
+
+Cause:
+
+- one of the local rate limits was hit on the SSO or API host
+
+What to do:
+
+- wait about one minute and try again
+- avoid repeatedly refreshing the login page or replaying the same request in a tight loop
