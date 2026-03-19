@@ -1,0 +1,1 @@
+Commit messages must use Conventional Commits format: <type>: <summary>.
